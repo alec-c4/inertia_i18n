@@ -1,0 +1,41 @@
+# frozen_string_literal: true
+
+InertiaI18n.configure do |config|
+  # Source directories for your frontend YAML files.
+  config.source_paths = [Rails.root.join("config", "locales", "frontend")]
+
+  # Target path for generated i18next JSON files
+  config.target_path = Rails.root.join("app", "frontend", "locales")
+
+  # Locales to process (first is primary)
+  config.locales = %i[en]
+
+  # YAML file pattern to match
+  config.source_pattern = "**/*.{yml,yaml}"
+
+  # Paths to scan for translation usage
+  <% extensions = case @framework
+     when :react then "js,ts,jsx,tsx"
+     when :vue then "js,ts,vue"
+     when :svelte then "js,ts,svelte"
+     else "js,ts,jsx,tsx,svelte,vue"
+     end %>
+  config.scan_paths = [
+    "app/frontend/**/*.{<%= extensions %>}"
+  ]
+
+  # Interpolation conversion (Rails %{var} -> i18next {{var}})
+  config.interpolation = { from: "%{", to: "{{" }
+
+  # Dynamic key patterns (prefix => description)
+  # Keys matching these prefixes won't be marked as unused
+  config.dynamic_patterns = {
+    # "status." => "Dynamic status keys"
+  }
+
+  # Keys to ignore during unused check
+  config.ignore_unused = []
+
+  # Keys to ignore during missing check
+  config.ignore_missing = []
+end

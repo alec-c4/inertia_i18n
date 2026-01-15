@@ -1,0 +1,6 @@
+en:
+  common:
+    welcome: "Welcome to InertiaI18n!"
+    actions:
+      save: "Save"
+      cancel: "Cancel"

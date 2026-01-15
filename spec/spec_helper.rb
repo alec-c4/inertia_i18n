@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+require "fileutils"
+require "json"
+require "simplecov"
+SimpleCov.start do
+  add_filter "/spec/"
+  add_group "Library", "lib"
+end
+
 require "inertia_i18n"
 
 RSpec.configure do |config|

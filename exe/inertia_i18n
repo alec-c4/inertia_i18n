@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require "zeitwerk"
+loader = Zeitwerk::Loader.new
+loader.push_dir(File.expand_path("../lib", __dir__))
+loader.setup
+
+# Load Rails environment if available
+if File.exist?("config/environment.rb")
+  require "rails"
+  require File.expand_path("config/environment.rb")
+end
+
+require "inertia_i18n/cli"
+
+InertiaI18n::Cli.start(ARGV)
