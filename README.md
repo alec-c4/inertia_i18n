@@ -3,7 +3,7 @@
 Translation management for Inertia.js applications with Rails backend
 
 [![Gem Version](https://badge.fury.io/rb/inertia_i18n.svg)](https://badge.fury.io/rb/inertia_i18n)
-[![Build Status](https://github.com/alec-c4/inertia_i18n/workflows/CI/badge.svg)](https://github.com/alec-c4/inertia_i18n/actions)
+[![Build Status](https://github.com/alec-c4/inertia_i18n/actions/workflows/main.yml/badge.svg)](https://github.com/alec-c4/inertia_i18n/actions)
 
 ## The Problem
 
