@@ -7,9 +7,9 @@ module InertiaI18n
 
       def create_test_file
         if rspec?
-          template "i18n_spec.rb", "spec/inertia_i18n_health_spec.rb"
+          template "i18n_spec.rb", "spec/inertia_i18n_spec.rb"
         else
-          template "i18n_test.rb", "test/inertia_i18n_health_test.rb"
+          template "i18n_test.rb", "test/inertia_i18n_test.rb"
         end
       end
 

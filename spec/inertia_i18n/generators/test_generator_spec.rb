@@ -21,8 +21,8 @@ RSpec.describe InertiaI18n::Generators::TestGenerator do
       gen = described_class.new([], {}, {destination_root: destination})
       gen.create_test_file
 
-      expect(File.exist?("spec/inertia_i18n_health_spec.rb")).to be true
-      content = File.read("spec/inertia_i18n_health_spec.rb")
+      expect(File.exist?("spec/inertia_i18n_spec.rb")).to be true
+      content = File.read("spec/inertia_i18n_spec.rb")
       expect(content).to include("rails_helper")
     end
   end
@@ -34,8 +34,8 @@ RSpec.describe InertiaI18n::Generators::TestGenerator do
       gen = described_class.new([], {}, {destination_root: destination})
       gen.create_test_file
 
-      expect(File.exist?("test/inertia_i18n_health_test.rb")).to be true
-      content = File.read("test/inertia_i18n_health_test.rb")
+      expect(File.exist?("test/inertia_i18n_test.rb")).to be true
+      content = File.read("test/inertia_i18n_test.rb")
       expect(content).to include("test_helper")
     end
   end
