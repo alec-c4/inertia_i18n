@@ -63,6 +63,7 @@ GEM
       reline (>= 0.4.2)
     json (2.18.0)
     language_server-protocol (3.17.0.5)
+    lefthook (2.0.15)
     lint_roller (1.1.0)
     logger (1.7.0)
     loofah (2.25.0)
@@ -194,6 +195,7 @@ DEPENDENCIES
   bundler (>= 2.0)
   inertia_i18n!
   irb
+  lefthook
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop-performance
@@ -225,6 +227,7 @@ CHECKSUMS
   irb (1.16.0) sha256=2abe56c9ac947cdcb2f150572904ba798c1e93c890c256f8429981a7675b0806
   json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
+  lefthook (2.0.15) sha256=416a7770272e059b105d6a7a58a3c18a4b4fdafaaa0cefd139c9f5c0a55db7af
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   loofah (2.25.0) sha256=df5ed7ac3bac6a4ec802df3877ee5cc86d027299f8952e6243b3dac446b060e6
