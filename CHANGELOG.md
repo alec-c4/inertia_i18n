@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.3] - 2026-01-16
+
+- Fix `RSpec/SpecFilePathFormat` lint error in generated test file
+
 ## [0.1.2] - 2026-01-16
 
 - Fix `LocalJumpError` in generated RSpec test file
