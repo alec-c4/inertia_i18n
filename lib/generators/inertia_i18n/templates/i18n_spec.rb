@@ -9,23 +9,23 @@ RSpec.describe InertiaI18n::HealthChecker do
 
     checker = described_class.new.check!
 
-    return if checker.healthy?
-
     message = ["\nTranslation health check failed!"]
 
-    if checker.issues[:missing].any?
-      message << "\nMissing Keys (#{checker.issues[:missing].count}):"
-      checker.issues[:missing].each { |i| message << "  - #{i[:key]}" }
-    end
+    unless checker.healthy?
+      if checker.issues[:missing].any?
+        message << "\nMissing Keys (#{checker.issues[:missing].count}):"
+        checker.issues[:missing].each { |i| message << "  - #{i[:key]}" }
+      end
 
-    if checker.issues[:unused].any?
-      message << "\nUnused Keys (#{checker.issues[:unused].count}):"
-      checker.issues[:unused].each { |i| message << "  - #{i[:key]}" }
-    end
+      if checker.issues[:unused].any?
+        message << "\nUnused Keys (#{checker.issues[:unused].count}):"
+        checker.issues[:unused].each { |i| message << "  - #{i[:key]}" }
+      end
 
-    if checker.issues[:unsync].any?
-      message << "\nLocale Synchronization Issues (#{checker.issues[:unsync].count}):"
-      checker.issues[:unsync].each { |i| message << "  - #{i[:key]} (in #{i[:locale]})" }
+      if checker.issues[:unsync].any?
+        message << "\nLocale Synchronization Issues (#{checker.issues[:unsync].count}):"
+        checker.issues[:unsync].each { |i| message << "  - #{i[:key]} (in #{i[:locale]})" }
+      end
     end
 
     expect(checker.healthy?).to be(true), message.join("\n")
