@@ -2,12 +2,12 @@ require "rails_helper"
 require "inertia_i18n/health_checker"
 require "inertia_i18n/file_converter"
 
-RSpec.describe InertiaI18n::HealthChecker do
+RSpec.describe InertiaI18n do
   it "has healthy translations" do
     # Ensure JSON files are up-to-date before checking
     InertiaI18n::FileConverter.convert_all
 
-    checker = described_class.new.check!
+    checker = InertiaI18n::HealthChecker.new.check!
 
     message = ["\nTranslation health check failed!"]
 
