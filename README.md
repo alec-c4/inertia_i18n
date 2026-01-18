@@ -143,6 +143,12 @@ inertia_i18n scan
 
 # Check translation health
 inertia_i18n health
+
+# Sort and format JSON locale files
+inertia_i18n normalize
+
+# Watch for changes and auto-convert
+inertia_i18n watch
 ```
 
 ---

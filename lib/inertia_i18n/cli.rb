@@ -3,6 +3,7 @@
 require "thor"
 require "json"
 require "yaml"
+require "listen"
 
 module InertiaI18n
   class Cli < Thor
@@ -23,6 +24,33 @@ module InertiaI18n
         results = FileConverter.convert_all
         results.each { |r| print_convert_result(r) }
       end
+    end
+
+    desc "watch", "Watch YAML locales for changes and auto-convert"
+    option :config, type: :string, desc: "Path to config file"
+    def watch
+      load_config(options[:config])
+      config = InertiaI18n.configuration
+
+      puts "👀 Watching #{config.source_paths.join(", ")} for YAML changes..."
+
+      listener = Listen.to(*config.source_paths, only: /\.(yml|yaml)$/) do |modified, added, removed|
+        puts "📝 Detected locale file changes..."
+        (modified + added + removed).each do |file|
+          puts "   #{file}"
+        end
+
+        puts "🔄 Regenerating JSON files..."
+        results = FileConverter.convert_all
+        results.each { |r| print_convert_result(r) }
+        puts "✅ Done!"
+      end
+
+      listener.start
+      sleep
+    rescue Interrupt
+      puts "\n👋 Stopping watch mode..."
+      listener.stop
     end
 
     desc "scan", "Scan frontend code for translation key usage"

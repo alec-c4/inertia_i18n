@@ -25,8 +25,8 @@ module InertiaI18n
           # Matches t('key'), t("key"), t(`key`)
 
           # Uses a lookahead to ensure it's a translation function call
-
-          content.scan(/#{escaped_func}\(\s*(['"`])([^'"`]+)\1/) do |match|
+          # Uses lookbehind (?<![\w]) to ensure we don't match end of other words (e.g. split)
+          content.scan(/(?<!\w)#{escaped_func}\(\s*(['"`])([^'"`]+)\1/) do |match|
             quote_type, key = match
 
             # If it's a backtick, ensure it's not a template literal with interpolation
@@ -50,7 +50,7 @@ module InertiaI18n
 
           # Matches t(`prefix.${var}`)
 
-          content.scan(/#{escaped_func}\(\s*`([^`]*\$\{.+?)`/) do |match|
+          content.scan(/(?<!\w)#{escaped_func}\(\s*`([^`]*\$\{.+?)`/) do |match|
             template = match[0]
 
             prefix = template.split("${").first

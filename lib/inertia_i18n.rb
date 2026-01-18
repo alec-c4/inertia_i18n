@@ -13,6 +13,7 @@ require_relative "inertia_i18n/scanner"
 require_relative "inertia_i18n/locale_loader"
 require_relative "inertia_i18n/file_converter"
 require_relative "inertia_i18n/health_checker"
+require_relative "inertia_i18n/railtie" if defined?(Rails::Railtie)
 
 module InertiaI18n
   class Error < StandardError; end
