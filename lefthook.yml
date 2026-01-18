@@ -1,8 +1,11 @@
 pre-commit:
   parallel: true
-  jobs:
-    - name: rubocop
+  commands:
+    appraisal:
+      glob: "{Gemfile,inertia_i18n.gemspec}"
+      run: bundle exec rake maintenance:update_appraisals && git add gemfiles/*.lock
+    rubocop:
       glob: "*.rb"
       run: bundle exec rubocop --force-exclusion {staged_files}
-    - name: rspec
+    rspec:
       run: bundle exec rspec

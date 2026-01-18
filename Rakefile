@@ -17,4 +17,12 @@ task :environment do
   # No-op
 end
 
+namespace :maintenance do
+  desc "Update all appraisal lockfiles"
+  task :update_appraisals do
+    sh "bundle exec appraisal install"
+    sh "bundle exec appraisal bundle update --all"
+  end
+end
+
 task default: %i[spec rubocop]
