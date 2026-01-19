@@ -37,6 +37,14 @@ module InertiaI18n
           end
         end
 
+        # Extract keys from object properties (e.g., titleKey: "some.key")
+        config.key_properties.each do |prop|
+          # Matches: titleKey: "some.key" or titleKey: 'some.key'
+          content.scan(/#{Regexp.escape(prop)}\s*:\s*(['"])([^'"]+)\1/) do |_quote, key|
+            keys << key if looks_like_i18n_key?(key)
+          end
+        end
+
         keys
       end
 
@@ -49,17 +57,33 @@ module InertiaI18n
           escaped_func = Regexp.escape(func)
 
           # Matches t(`prefix.${var}`)
-
           content.scan(/(?<!\w)#{escaped_func}\(\s*`([^`]*\$\{.+?)`/) do |match|
             template = match[0]
-
             prefix = template.split("${").first
-
             patterns << {pattern: prefix, type: :template_literal, raw: template}
+          end
+
+          # Matches t('prefix.' + var) or t("prefix." + var) - string concatenation
+          content.scan(/(?<!\w)#{escaped_func}\(\s*(['"])([^'"]+\.)\1\s*\+/) do |match|
+            prefix = match[1]
+            patterns << {pattern: prefix, type: :string_concat, raw: "#{prefix} + ..."}
           end
         end
 
         patterns
+      end
+
+      private
+
+      # Check if a string looks like an i18n key (has dots, proper length, not a URL)
+      def looks_like_i18n_key?(key)
+        return false if key.nil? || key.empty?
+        return false if key.length < 4
+        return false unless key.include?(".")
+        return false if key.start_with?("/")
+        return false if key.match?(/^https?:/)
+        return false if key.match?(/\s/) # Contains whitespace
+        true
       end
     end
   end

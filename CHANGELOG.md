@@ -1,5 +1,21 @@
 ## [Unreleased]
 
+## [0.3.0] - 2026-01-19
+
+### Added
+
+- Configuration options for tuning health checks: `key_properties`, `sibling_detection`, and`missing_key_filters`
+- Support for extracting translation keys from object properties (e.g., `titleKey: "some.key"`)
+- Support for detecting string concatenation patterns as dynamic keys (e.g., `t('prefix.' + var)`)
+
+### Improved
+
+- Health Checker now intelligently handles i18next plural suffixes:
+  - Missing check: `t('key', { count: n })` won't report missing if `key_one`/`key_other` exist
+  - Unused check: `key_one`/`key_other` won't report unused if base `key` is used in code
+- Added "sibling detection" to automatically handle enum-like keys (e.g., if `status.open` is used, all`status.*` are considered used)
+- Added default filters for false-positive missing keys (ignores short keys, keys without dots, URLs,constants, incomplete keys ending with `.`)
+
 ## [0.2.0] - 2026-01-18
 
 ### Added

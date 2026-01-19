@@ -35,6 +35,15 @@ module InertiaI18n
     # Keys to ignore during missing check
     attr_accessor :ignore_missing
 
+    # Object properties that contain translation keys (e.g., titleKey: "some.key")
+    attr_accessor :key_properties
+
+    # Sibling detection settings for enum-like keys (status, types, etc.)
+    attr_accessor :sibling_detection
+
+    # Filters for false-positive missing keys
+    attr_accessor :missing_key_filters
+
     def initialize
       @source_paths = ["config/locales/frontend"]
       @target_path = "app/frontend/locales"
@@ -52,6 +61,21 @@ module InertiaI18n
       @dynamic_patterns = {}
       @ignore_unused = []
       @ignore_missing = []
+      @key_properties = %w[titleKey labelKey messageKey descriptionKey placeholderKey key]
+      @sibling_detection = {
+        enabled: true,
+        suffixes: %w[status statuses types type priorities priority]
+      }
+      @missing_key_filters = {
+        min_length: 4,
+        require_dot: true,
+        exclude_patterns: [
+          /^\/[\w\/-]*$/,           # URL paths (/hr/applications)
+          /^[A-Z_]+$/,               # Constants (HTTP, POST)
+          /^\w+_id$/,                # ID fields (user_id, parent_id)
+          /^[a-z]{2}(-[A-Z]{2})?$/   # Locales (en, ru-RU)
+        ]
+      }
     end
 
     def primary_locale
