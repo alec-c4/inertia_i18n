@@ -12,6 +12,7 @@ require_relative "inertia_i18n/parsers/vue_parser"
 require_relative "inertia_i18n/scanner"
 require_relative "inertia_i18n/locale_loader"
 require_relative "inertia_i18n/file_converter"
+require_relative "inertia_i18n/normalizer"
 require_relative "inertia_i18n/health_checker"
 require_relative "inertia_i18n/railtie" if defined?(Rails::Railtie)
 

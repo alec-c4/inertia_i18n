@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [0.4.0] - 2026-01-28
+
+### Added
+
+- `normalize` command now sorts keys in YAML locale files in addition to JSON files
+- `InertiaI18n::Normalizer` class to handle file normalization logic
+
 ## [0.3.0] - 2026-01-19
 
 ### Added

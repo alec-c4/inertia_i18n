@@ -25,7 +25,7 @@ namespace :inertia_i18n do
     InertiaI18n::Cli.new.health
   end
 
-  desc "Sort and format JSON locale files"
+  desc "Sort and format YAML and JSON locale files"
   task normalize: :environment do
     require "inertia_i18n/cli"
     InertiaI18n::Cli.new.normalize

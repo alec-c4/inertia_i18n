@@ -95,22 +95,12 @@ module InertiaI18n
       exit 1 unless checker.healthy?
     end
 
-    desc "normalize", "Sort and format JSON locale files"
+    desc "normalize", "Sort and format YAML and JSON locale files"
     option :config, type: :string, desc: "Path to config file"
     def normalize
       load_config(options[:config])
-      config = InertiaI18n.configuration
 
-      config.locales.each do |locale|
-        file = File.join(config.target_path, "#{locale}.json")
-        next unless File.exist?(file)
-
-        data = JSON.parse(File.read(file))
-        sorted_data = deep_sort(data)
-        File.write(file, JSON.pretty_generate(sorted_data) + "\n")
-
-        puts "Normalized #{file}"
-      end
+      Normalizer.new.normalize
     end
 
     desc "version", "Show version"
@@ -233,19 +223,6 @@ module InertiaI18n
         end
       end
       puts
-    end
-
-    def deep_sort(data)
-      case data
-      when Hash
-        data.keys.sort.each_with_object({}) do |key, sorted|
-          sorted[key] = deep_sort(data[key])
-        end
-      when Array
-        data.map { |item| deep_sort(item) }
-      else
-        data
-      end
     end
   end
 end
