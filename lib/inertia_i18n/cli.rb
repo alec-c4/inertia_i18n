@@ -31,10 +31,11 @@ module InertiaI18n
     def watch
       load_config(options[:config])
       config = InertiaI18n.configuration
+      paths = config.source_paths.map(&:to_s)
 
-      puts "👀 Watching #{config.source_paths.join(", ")} for YAML changes..."
+      puts "👀 Watching #{paths.join(", ")} for YAML changes..."
 
-      listener = Listen.to(*config.source_paths, only: /\.(yml|yaml)$/) do |modified, added, removed|
+      listener = Listen.to(*paths, only: /\.(yml|yaml)$/) do |modified, added, removed|
         puts "📝 Detected locale file changes..."
         (modified + added + removed).each do |file|
           puts "   #{file}"

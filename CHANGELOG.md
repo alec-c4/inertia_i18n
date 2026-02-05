@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.4.2] - 2026-02-05
+
+### Fixed
+
+- `watch` command not detecting changes when `source_paths` contains `Pathname` objects
+
 ## [0.4.1] - 2026-02-05
 
 ### Changed
