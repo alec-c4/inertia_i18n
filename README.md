@@ -92,7 +92,9 @@ InertiaI18n.configure do |config|
   config.source_paths = [Rails.root.join('config', 'locales', 'frontend')]
 
   config.target_path = Rails.root.join('app', 'frontend', 'locales')
-  config.locales = [:en, :ru]
+
+  # Uses I18n.available_locales by default. Uncomment to override:
+  # config.locales = [:en, :ru]
 
   # Scan paths are automatically set based on your detected framework
   config.scan_paths = [
@@ -329,8 +331,8 @@ InertiaI18n.configure do |config|
   # Target: i18next JSON files
   config.target_path = 'app/frontend/locales'
 
-  # Locales to process
-  config.locales = [:en, :ru, :de]
+  # Locales to process (uses I18n.available_locales by default)
+  # config.locales = [:en, :ru, :de]
 
   # Frontend paths to scan
   config.scan_paths = [

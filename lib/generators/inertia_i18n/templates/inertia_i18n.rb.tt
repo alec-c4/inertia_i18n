@@ -8,7 +8,8 @@ InertiaI18n.configure do |config|
   config.target_path = Rails.root.join("app", "frontend", "locales")
 
   # Locales to process (first is primary)
-  config.locales = %i[en]
+  # Uses I18n.available_locales by default. Uncomment to override:
+  # config.locales = %i[en ru]
 
   # YAML file pattern to match
   config.source_pattern = "**/*.{yml,yaml}"

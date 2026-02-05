@@ -9,7 +9,11 @@ module InertiaI18n
     attr_accessor :target_path
 
     # Locales to process (first is primary)
-    attr_accessor :locales
+    attr_writer :locales
+
+    def locales
+      @locales || I18n.available_locales
+    end
 
     # YAML file pattern to match
     attr_accessor :source_pattern
@@ -47,7 +51,7 @@ module InertiaI18n
     def initialize
       @source_paths = ["config/locales/frontend"]
       @target_path = "app/frontend/locales"
-      @locales = %i[en]
+      @locales = nil # Uses I18n.available_locales by default
       @source_pattern = "**/*.{yml,yaml}"
       @interpolation = {from: "%{", to: "{{"}
       @scan_paths = ["app/frontend/**/*.{js,ts,jsx,tsx,svelte,vue}"]

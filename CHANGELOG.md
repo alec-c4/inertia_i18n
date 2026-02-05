@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [0.4.1] - 2026-02-05
+
+### Changed
+
+- Default `config.locales` now uses `I18n.available_locales` instead of hardcoded `[:en]`
+- Generated initializer shows commented example for overriding locales
+
 ## [0.4.0] - 2026-01-28
 
 ### Added
