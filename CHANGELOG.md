@@ -1,5 +1,21 @@
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-06
+
+### Added
+
+- `missing` CLI command and rake task to find missing translation keys independently
+- `unused` CLI command and rake task to find unused translation keys independently
+- YML config support: `config/inertia_i18n.yml` as alternative to Ruby initializer
+- `Configuration#load_from_yaml` with automatic type coercion (locales → symbols, exclude_patterns → Regexp)
+- Auto-detection of YML config in CLI and Rails (via Railtie initializer)
+- `init --format yaml` option to generate YML config template
+- `HealthChecker#check!(checks:)` parameter for running selective checks (`:missing`, `:unused`, `:unsync`)
+
+### Changed
+
+- **Breaking:** CLI executable renamed from `inertia_i18n` to `inertia-i18n` (matching i18n-tasks naming convention)
+
 ## [0.4.2] - 2026-02-05
 
 ### Fixed

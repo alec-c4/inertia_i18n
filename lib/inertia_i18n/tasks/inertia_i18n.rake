@@ -19,6 +19,18 @@ namespace :inertia_i18n do
     InertiaI18n::Cli.new.scan
   end
 
+  desc "Find missing translation keys"
+  task missing: :environment do
+    require "inertia_i18n/cli"
+    InertiaI18n::Cli.new.missing
+  end
+
+  desc "Find unused translation keys"
+  task unused: :environment do
+    require "inertia_i18n/cli"
+    InertiaI18n::Cli.new.unused
+  end
+
   desc "Check translation health (missing, unused, unsync)"
   task health: :environment do
     require "inertia_i18n/cli"

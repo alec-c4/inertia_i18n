@@ -83,25 +83,42 @@ By default, InertiaI18n will look for YAML files in `config/locales/frontend`. Y
 
 ### 1. Configure
 
-The installer creates a default configuration file. You can customize it in `config/initializers/inertia_i18n.rb`.
+InertiaI18n supports two configuration formats: **Ruby initializer** (default) and **YAML file** (like i18n-tasks).
+
+**Option A: Ruby initializer** (created by the installer)
 
 ```ruby
 # config/initializers/inertia_i18n.rb
 InertiaI18n.configure do |config|
-  # Recommended: point to a dedicated frontend folder
   config.source_paths = [Rails.root.join('config', 'locales', 'frontend')]
-
   config.target_path = Rails.root.join('app', 'frontend', 'locales')
 
   # Uses I18n.available_locales by default. Uncomment to override:
   # config.locales = [:en, :ru]
 
-  # Scan paths are automatically set based on your detected framework
   config.scan_paths = [
     Rails.root.join('app', 'frontend', '**', '*.{svelte,tsx,vue}')
   ]
 end
 ```
+
+**Option B: YAML config** (generate with `inertia-i18n init --format yaml`)
+
+```yaml
+# config/inertia_i18n.yml
+source_paths:
+  - config/locales/frontend
+target_path: app/frontend/locales
+locales:
+  - en
+  - ru
+scan_paths:
+  - "app/frontend/**/*.{js,ts,jsx,tsx,svelte,vue}"
+```
+
+Config priority: `--config` CLI flag > `config/inertia_i18n.yml` > Ruby initializer > defaults.
+
+The YAML config is auto-detected in both CLI and Rails (via Railtie).
 
 ### 2. Convert YAML to JSON
 
@@ -117,41 +134,58 @@ bundle exec rake inertia_i18n:watch
 
 The recommended way to check translation health is by running the generated test as part of your test suite. See the [CI Integration](#ci-integration) section for details.
 
-You can also run a manual check from the command line:
+You can also run checks from the command line:
 
 ```bash
-# Find missing, unused, and out-of-sync keys
+# All checks (missing + unused + unsync)
 bundle exec rake inertia_i18n:health
+
+# Find only missing keys (used in code but not translated)
+bundle exec rake inertia_i18n:missing
+
+# Find only unused keys (translated but not used in code)
+bundle exec rake inertia_i18n:unused
 ```
 
 ---
 
 ## CLI Usage
 
-All CLI commands load the Rails environment, so they have access to your application's configuration and behave identically to the `rake` tasks.
+The CLI executable is `inertia-i18n`. All commands load the Rails environment when available, so they have access to your application's configuration.
 
 ```bash
-# Generate a new configuration file
-inertia_i18n init
+# Generate a Ruby initializer config
+inertia-i18n init
+
+# Generate a YAML config file
+inertia-i18n init --format yaml
 
 # Convert YAML to JSON
-inertia_i18n convert
+inertia-i18n convert
 
 # Convert specific locale
-inertia_i18n convert --locale=ru
+inertia-i18n convert --locale=ru
 
 # Scan frontend code for translation usage
-inertia_i18n scan
+inertia-i18n scan
 
-# Check translation health
-inertia_i18n health
+# Check translation health (all checks)
+inertia-i18n health
 
-# Sort and format JSON locale files
-inertia_i18n normalize
+# Find only missing keys
+inertia-i18n missing
+
+# Find only unused keys
+inertia-i18n unused
+
+# Sort and format locale files
+inertia-i18n normalize
 
 # Watch for changes and auto-convert
-inertia_i18n watch
+inertia-i18n watch
 ```
+
+All health check commands support `--format text|json`, `--verbose`, and `--config PATH` options.
 
 ---
 
@@ -318,6 +352,8 @@ ignore:
 
 ## Configuration Reference
 
+### Ruby initializer
+
 ```ruby
 InertiaI18n.configure do |config|
   # Source directories for your frontend YAML files.
@@ -339,20 +375,98 @@ InertiaI18n.configure do |config|
     'app/frontend/**/*.{js,ts,jsx,tsx,svelte,vue}'
   ]
 
+  # Translation function names to detect
+  config.translation_functions = %w[t $t i18n.t]
+
   # Interpolation conversion
   config.interpolation = { from: '%{', to: '{{' }
 
-  # Flatten nested keys (default: false)
-  config.flatten_keys = false
+  # Dynamic key patterns (prefix => description)
+  # Keys matching these prefixes won't be marked as unused
+  config.dynamic_patterns = {
+    # "status." => "Dynamic status keys"
+  }
 
-  # Ignore patterns (don't scan these files)
-  config.ignore_patterns = [
-    '**/node_modules/**',
-    '**/vendor/**',
-    '**/*.test.{js,ts}'
-  ]
+  # Keys to ignore during unused/missing checks
+  config.ignore_unused = []
+  config.ignore_missing = []
+
+  # Object properties that contain translation keys
+  config.key_properties = %w[titleKey labelKey messageKey descriptionKey placeholderKey key]
+
+  # Sibling detection for enum-like keys
+  config.sibling_detection = {
+    enabled: true,
+    suffixes: %w[status statuses types type priorities priority]
+  }
+
+  # Filters for false-positive missing keys
+  config.missing_key_filters = {
+    min_length: 4,
+    require_dot: true,
+    exclude_patterns: [
+      /^\/[\w\/-]*$/,           # URL paths
+      /^[A-Z_]+$/,               # Constants
+      /^\w+_id$/,                # ID fields
+      /^[a-z]{2}(-[A-Z]{2})?$/   # Locales
+    ]
+  }
 end
 ```
+
+### YAML config
+
+All the same options are available in `config/inertia_i18n.yml`:
+
+```yaml
+# config/inertia_i18n.yml
+source_paths:
+  - config/locales/frontend
+target_path: app/frontend/locales
+locales:
+  - en
+  - ru
+source_pattern: "**/*.{yml,yaml}"
+interpolation:
+  from: "%{"
+  to: "{{"
+scan_paths:
+  - "app/frontend/**/*.{js,ts,jsx,tsx,svelte,vue}"
+translation_functions:
+  - t
+  - $t
+  - i18n.t
+# dynamic_patterns:
+#   "status.": Dynamic status keys
+ignore_unused: []
+ignore_missing: []
+key_properties:
+  - titleKey
+  - labelKey
+  - messageKey
+  - descriptionKey
+  - placeholderKey
+  - key
+sibling_detection:
+  enabled: true
+  suffixes:
+    - status
+    - statuses
+    - types
+    - type
+    - priorities
+    - priority
+missing_key_filters:
+  min_length: 4
+  require_dot: true
+  exclude_patterns:
+    - "^/[\\w/-]*$"
+    - "^[A-Z_]+$"
+    - "^\\w+_id$"
+    - "^[a-z]{2}(-[A-Z]{2})?$"
+```
+
+Type coercion is applied automatically: `locales` are converted to symbols, `exclude_patterns` strings are compiled to `Regexp`.
 
 ---
 

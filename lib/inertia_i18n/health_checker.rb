@@ -11,10 +11,10 @@ module InertiaI18n
       @issues = {missing: [], unused: [], unsync: []}
     end
 
-    def check!
-      check_missing_keys
-      check_unused_keys
-      check_locale_sync
+    def check!(checks: [:missing, :unused, :unsync])
+      check_missing_keys if checks.include?(:missing)
+      check_unused_keys if checks.include?(:unused)
+      check_locale_sync if checks.include?(:unsync)
       self
     end
 

@@ -73,6 +73,46 @@ module InertiaI18n
       end
     end
 
+    desc "missing", "Find missing translation keys"
+    option :format, type: :string, default: "text", enum: %w[text json]
+    option :verbose, type: :boolean, default: false, aliases: "-v"
+    option :config, type: :string, desc: "Path to config file"
+    def missing
+      load_config(options[:config])
+
+      checker = HealthChecker.new.check!(checks: [:missing])
+
+      if options[:format] == "json"
+        puts JSON.pretty_generate({issues: checker.issues[:missing], count: checker.issues[:missing].size})
+      else
+        print_issues("Missing Keys (used in code, not translated)", checker.issues[:missing], options[:verbose])
+        puts "#{checker.issues[:missing].size} missing key(s) found." if checker.issues[:missing].any?
+        puts "No missing keys found." if checker.issues[:missing].empty?
+      end
+
+      exit 1 if checker.issues[:missing].any?
+    end
+
+    desc "unused", "Find unused translation keys"
+    option :format, type: :string, default: "text", enum: %w[text json]
+    option :verbose, type: :boolean, default: false, aliases: "-v"
+    option :config, type: :string, desc: "Path to config file"
+    def unused
+      load_config(options[:config])
+
+      checker = HealthChecker.new.check!(checks: [:unused])
+
+      if options[:format] == "json"
+        puts JSON.pretty_generate({issues: checker.issues[:unused], count: checker.issues[:unused].size})
+      else
+        print_issues("Unused Keys (translated, not used in code)", checker.issues[:unused], options[:verbose])
+        puts "#{checker.issues[:unused].size} unused key(s) found." if checker.issues[:unused].any?
+        puts "No unused keys found." if checker.issues[:unused].empty?
+      end
+
+      exit 1 if checker.issues[:unused].any?
+    end
+
     desc "health", "Check translation health (missing, unused, unsync)"
     option :format, type: :string, default: "text", enum: %w[text json]
     option :verbose, type: :boolean, default: false, aliases: "-v"
@@ -110,14 +150,36 @@ module InertiaI18n
     end
 
     desc "init", "Generate configuration file"
-    option :path, type: :string, default: "config/initializers/inertia_i18n.rb"
+    option :format, type: :string, default: "ruby", enum: %w[ruby yaml], desc: "Config format (ruby or yaml)"
+    option :path, type: :string, desc: "Output path (auto-detected from format if not specified)"
     def init
-      template = <<~RUBY
+      format = options[:format]
+      path = options[:path] || default_init_path(format)
+
+      content = (format == "yaml") ? yaml_config_template : ruby_config_template
+
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, content)
+      puts "Created #{path}"
+    end
+
+    private
+
+    def default_init_path(format)
+      if format == "yaml"
+        "config/inertia_i18n.yml"
+      else
+        "config/initializers/inertia_i18n.rb"
+      end
+    end
+
+    def ruby_config_template
+      <<~RUBY
         # frozen_string_literal: true
 
         InertiaI18n.configure do |config|
           # Source path for Rails YAML locale files
-          config.source_path = "config/locales"
+          config.source_paths = ["config/locales/frontend"]
 
           # Target path for generated i18next JSON files
           config.target_path = "app/frontend/locales"
@@ -134,7 +196,7 @@ module InertiaI18n
           # Translation function names to detect
           config.translation_functions = %w[t $t i18n.t]
 
-          # Interpolation conversion (Rails %<var>s -> i18next {{var}})
+          # Interpolation conversion (Rails %{var} -> i18next {{var}})
           config.interpolation = { from: "%{", to: "{{" }
 
           # Dynamic key patterns (prefix => description)
@@ -150,18 +212,98 @@ module InertiaI18n
           config.ignore_missing = []
         end
       RUBY
-
-      FileUtils.mkdir_p(File.dirname(options[:path]))
-      File.write(options[:path], template)
-      puts "Created #{options[:path]}"
     end
 
-    private
+    def yaml_config_template
+      <<~YAML
+        # InertiaI18n configuration
+        # See: https://github.com/alec-c4/inertia_i18n
+
+        # Source paths for Rails YAML locale files
+        source_paths:
+          - config/locales/frontend
+
+        # Target path for generated i18next JSON files
+        target_path: app/frontend/locales
+
+        # Locales to process (first is primary)
+        locales:
+          - en
+
+        # YAML file pattern to match
+        source_pattern: "**/*.{yml,yaml}"
+
+        # Interpolation conversion (Rails %{var} -> i18next {{var}})
+        interpolation:
+          from: "%{"
+          to: "{{"
+
+        # Paths to scan for translation usage
+        scan_paths:
+          - "app/frontend/**/*.{js,ts,jsx,tsx,svelte,vue}"
+
+        # Translation function names to detect
+        translation_functions:
+          - t
+          - $t
+          - i18n.t
+
+        # Dynamic key patterns (prefix => description)
+        # Keys matching these prefixes won't be marked as unused
+        # dynamic_patterns:
+        #   "status.": Dynamic status keys
+
+        # Keys to ignore during unused check
+        ignore_unused: []
+
+        # Keys to ignore during missing check
+        ignore_missing: []
+
+        # Object properties that contain translation keys
+        key_properties:
+          - titleKey
+          - labelKey
+          - messageKey
+          - descriptionKey
+          - placeholderKey
+          - key
+
+        # Sibling detection for enum-like keys
+        sibling_detection:
+          enabled: true
+          suffixes:
+            - status
+            - statuses
+            - types
+            - type
+            - priorities
+            - priority
+
+        # Filters for false-positive missing keys
+        missing_key_filters:
+          min_length: 4
+          require_dot: true
+          exclude_patterns:
+            - "^/[\\\\w/-]*$"
+            - "^[A-Z_]+$"
+            - "^\\\\w+_id$"
+            - "^[a-z]{2}(-[A-Z]{2})?$"
+      YAML
+    end
 
     def load_config(config_path)
-      return unless config_path && File.exist?(config_path)
+      if config_path && File.exist?(config_path)
+        if config_path.end_with?(".yml", ".yaml")
+          InertiaI18n.configuration.load_from_yaml(config_path)
+        else
+          require config_path
+        end
+        return
+      end
 
-      require config_path
+      # Auto-detect YML config
+      yaml_path = "config/inertia_i18n.yml"
+      InertiaI18n.configuration.load_from_yaml(yaml_path) if File.exist?(yaml_path)
     end
 
     def print_convert_result(result)

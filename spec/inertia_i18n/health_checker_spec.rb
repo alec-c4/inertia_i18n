@@ -181,6 +181,65 @@ RSpec.describe InertiaI18n::HealthChecker do
     end
   end
 
+  describe "#check! with selective checks" do
+    before do
+      InertiaI18n.configure do |config|
+        config.locales = %i[en ru]
+      end
+
+      File.write(
+        File.join(locales_path, "en.json"),
+        JSON.pretty_generate({
+          "common" => {"hello" => "Hello", "goodbye" => "Goodbye"},
+          "unused" => {"key" => "Not used anywhere"},
+          "status" => {"active" => "Active"}
+        })
+      )
+
+      File.write(
+        File.join(locales_path, "ru.json"),
+        JSON.pretty_generate({
+          "common" => {"hello" => "Привет"}
+        })
+      )
+    end
+
+    it "runs only missing check when checks: [:missing]" do
+      checker = described_class.new.check!(checks: [:missing])
+      expect(checker.issues[:missing]).not_to be_empty
+      expect(checker.issues[:unused]).to be_empty
+      expect(checker.issues[:unsync]).to be_empty
+    end
+
+    it "runs only unused check when checks: [:unused]" do
+      checker = described_class.new.check!(checks: [:unused])
+      expect(checker.issues[:missing]).to be_empty
+      expect(checker.issues[:unused]).not_to be_empty
+      expect(checker.issues[:unsync]).to be_empty
+    end
+
+    it "runs only unsync check when checks: [:unsync]" do
+      checker = described_class.new.check!(checks: [:unsync])
+      expect(checker.issues[:missing]).to be_empty
+      expect(checker.issues[:unused]).to be_empty
+      expect(checker.issues[:unsync]).not_to be_empty
+    end
+
+    it "runs multiple selected checks" do
+      checker = described_class.new.check!(checks: [:missing, :unused])
+      expect(checker.issues[:missing]).not_to be_empty
+      expect(checker.issues[:unused]).not_to be_empty
+      expect(checker.issues[:unsync]).to be_empty
+    end
+
+    it "runs all checks by default" do
+      checker = described_class.new.check!
+      expect(checker.issues[:missing]).not_to be_empty
+      expect(checker.issues[:unused]).not_to be_empty
+      expect(checker.issues[:unsync]).not_to be_empty
+    end
+  end
+
   describe "#healthy?" do
     before do
       File.write(File.join(locales_path, "en.json"), "{}")

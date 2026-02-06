@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     Dir["{lib,exe}/**/*", "LICENSE.txt", "README.md", "CHANGELOG.md"].reject { |f| File.directory?(f) }
   end
   spec.bindir = "exe"
-  spec.executables = ["inertia_i18n"]
+  spec.executables = ["inertia-i18n"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "thor", "~> 1.0"
