@@ -11,6 +11,7 @@ if File.exist?("config/environment.rb")
   require File.expand_path("config/environment.rb")
 end
 
+require "inertia_i18n"
 require "inertia_i18n/cli"
 
 InertiaI18n::Cli.start(ARGV)

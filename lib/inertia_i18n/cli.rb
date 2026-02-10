@@ -363,7 +363,20 @@ module InertiaI18n
       if verbose
         issues.each do |issue|
           puts "  - #{issue[:key]}"
+          if issue[:occurrences]&.any?
+            issue[:occurrences].each do |loc|
+              puts "    ↳ #{loc[:file]}:#{loc[:line]}"
+            end
+          end
         end
+      else
+        # In non-verbose mode, show first occurrence for context
+        issues.take(5).each do |issue|
+          loc = issue[:occurrences]&.first
+          loc_str = loc ? " (#{loc[:file]}:#{loc[:line]})" : ""
+          puts "  - #{issue[:key]}#{loc_str}"
+        end
+        puts "  ... and #{issues.count - 5} more (use --verbose to see all)" if issues.count > 5
       end
       puts
     end

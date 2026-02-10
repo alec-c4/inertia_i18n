@@ -9,9 +9,31 @@ module InertiaI18n
 
       def extract_javascript_keys(content)
         {
-          static: extract_static_keys(content).uniq,
+          static: (extract_static_keys(content) + extract_magic_comments(content)).uniq { |k| k[:key] },
           dynamic: extract_dynamic_patterns(content).uniq { |p| p[:pattern] }
         }
+      end
+
+      def extract_magic_comments(content)
+        keys = []
+
+        # Regex to match both 'inertia-i18n-use' and 'i18n-tasks-use'
+        # Group 1: key
+        comment_pattern = /(?:inertia-i18n-use|i18n-tasks-use)\s+([a-zA-Z0-9_.]+)/
+
+        # Single line comments: // inertia-i18n-use key.name
+        content.scan(%r{//\s*#{comment_pattern}}) do |match|
+          line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+          keys << {key: match[0], line: line}
+        end
+
+        # Block comments: /* inertia-i18n-use key.name */
+        content.scan(%r{/\*\s*#{comment_pattern}\s*\*/}) do |match|
+          line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+          keys << {key: match[0], line: line}
+        end
+
+        keys
       end
 
       def extract_static_keys(content)
@@ -23,25 +45,22 @@ module InertiaI18n
           escaped_func = Regexp.escape(func)
 
           # Matches t('key'), t("key"), t(`key`)
-
-          # Uses a lookahead to ensure it's a translation function call
-          # Uses lookbehind (?<![\w]) to ensure we don't match end of other words (e.g. split)
           content.scan(/(?<!\w)#{escaped_func}\(\s*(['"`])([^'"`]+)\1/) do |match|
             quote_type, key = match
-
-            # If it's a backtick, ensure it's not a template literal with interpolation
-
             next if quote_type == "`" && key.include?("${")
 
-            keys << key
+            line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+            keys << {key: key, line: line}
           end
         end
 
-        # Extract keys from object properties (e.g., titleKey: "some.key")
+        # Extract keys from object properties
         config.key_properties.each do |prop|
-          # Matches: titleKey: "some.key" or titleKey: 'some.key'
           content.scan(/#{Regexp.escape(prop)}\s*:\s*(['"])([^'"]+)\1/) do |_quote, key|
-            keys << key if looks_like_i18n_key?(key)
+            if looks_like_i18n_key?(key)
+              line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+              keys << {key: key, line: line}
+            end
           end
         end
 

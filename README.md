@@ -231,6 +231,16 @@ Handles:
 - Template literals: `t(\`user.\${type}.title\`)` (flagged for review)
 - Dynamic patterns: `t(keyVariable)` (flagged for review)
 
+### Magic Comments
+
+Use magic comments to mark dynamic keys as used or suppress warnings. Both `inertia-i18n-use` and `i18n-tasks-use` are supported.
+
+```javascript
+// inertia-i18n-use status.active
+// inertia-i18n-use status.inactive
+const statusLabel = t(`status.${status}`)
+```
+
 ### Health Checks
 
 | Check            | Description                                      |
@@ -328,7 +338,26 @@ jobs:
 
 ## Compatibility with i18n-tasks
 
-If you use [i18n-tasks](https://github.com/glebm/i18n-tasks) for your backend translations, it might flag your frontend keys as "unused" or "missing". To prevent this, configure `i18n-tasks` to ignore the frontend locale directory.
+InertiaI18n works seamlessly with [i18n-tasks](https://github.com/glebm/i18n-tasks).
+
+### 1. Integrating Scanners (Recommended)
+
+You can configure `i18n-tasks` to use the `inertia_i18n` scanner. This allows `i18n-tasks` to correctly detect frontend key usage, so you can use `i18n-tasks unused` for your entire project (backend + frontend).
+
+Add this to your `config/i18n-tasks.yml`:
+
+```yaml
+<% require 'inertia_i18n/i18n_tasks/scanner' %>
+search:
+  scanners:
+    - InertiaI18n::I18nTasks::Scanner
+```
+
+Now `i18n-tasks` will "see" keys used in your Vue/React/Svelte files.
+
+### 2. Separating Concerns
+
+If you prefer to keep them separate, configure `i18n-tasks` to ignore the frontend locale directory so it doesn't flag frontend keys as "unused" or "missing".
 
 Add this to your `config/i18n-tasks.yml`:
 

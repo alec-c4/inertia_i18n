@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require "yaml"
+require "json"
+require "i18n"
+
 require_relative "inertia_i18n/version"
 require_relative "inertia_i18n/configuration"
 require_relative "inertia_i18n/converter"

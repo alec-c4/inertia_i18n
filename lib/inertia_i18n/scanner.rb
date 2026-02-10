@@ -18,12 +18,6 @@ module InertiaI18n
       results
     end
 
-    private
-
-    def frontend_files
-      @config.scan_paths.flat_map { |pattern| Dir.glob(pattern) }
-    end
-
     def parser_for_file(file)
       ext = File.extname(file).downcase
 
@@ -39,6 +33,12 @@ module InertiaI18n
       else
         Parsers::BaseParser.new
       end
+    end
+
+    private
+
+    def frontend_files
+      @config.scan_paths.flat_map { |pattern| Dir.glob(pattern) }
     end
   end
 end

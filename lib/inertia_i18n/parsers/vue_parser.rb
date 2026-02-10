@@ -31,9 +31,9 @@ module InertiaI18n
         keys = []
 
         # v-t directive: v-t="'key'" or v-t='"key"'
-
         content.scan(/v-t\s*=\s*(["'])['"]([^'"]+)['"]\1/) do |match|
-          keys << match[1]
+          line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+          keys << {key: match[1], line: line}
         end
 
         keys

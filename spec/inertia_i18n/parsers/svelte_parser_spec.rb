@@ -9,8 +9,9 @@ RSpec.describe InertiaI18n::Parsers::SvelteParser do
 
   it "extracts keys from .svelte file" do
     result = parser.extract_keys(fixture_file)
+    keys = result[:static].map { |k| k[:key] }
 
-    expect(result[:static]).to include("common.hello", "common.goodbye")
+    expect(keys).to include("common.hello", "common.goodbye")
     expect(result[:dynamic].first).to include(pattern: "status.")
   end
 end

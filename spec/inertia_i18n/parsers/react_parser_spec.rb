@@ -9,8 +9,9 @@ RSpec.describe InertiaI18n::Parsers::ReactParser do
 
   it "extracts keys from .jsx file" do
     result = parser.extract_keys(fixture_file)
+    keys = result[:static].map { |k| k[:key] }
 
-    expect(result[:static]).to include("react.profile_title", "react.greeting")
+    expect(keys).to include("react.profile_title", "react.greeting")
     expect(result[:dynamic].first).to include(pattern: "react.dynamic.")
   end
 end

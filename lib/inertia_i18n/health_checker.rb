@@ -52,10 +52,19 @@ module InertiaI18n
       missing = filter_ignored_keys(missing, @config.ignore_missing)
 
       missing.each do |key|
+        locations = @scan_results.occurrences[key]
+        message = "Key '#{key}' is used in code but missing from #{primary_locale}.json"
+
+        if locations&.any?
+          first_loc = locations.first
+          message += " (found in #{first_loc[:file]}:#{first_loc[:line]})"
+        end
+
         @issues[:missing] << {
           key: key,
           severity: :error,
-          message: "Key '#{key}' is used in code but missing from #{primary_locale}.json"
+          message: message,
+          occurrences: locations
         }
       end
     end

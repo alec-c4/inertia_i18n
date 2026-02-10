@@ -1,5 +1,20 @@
 ## [Unreleased]
 
+## [0.6.0] - 2026-02-09
+
+### Added
+
+- **Context Awareness**: `missing` and `unused` commands now report the file path and line number where the key was found (e.g., `app/frontend/User.vue:42`).
+- **Magic Comments**: Support for `// inertia-i18n-use key.name` and `/* inertia-i18n-use key.name */` to mark dynamic keys as used.
+- **i18n-tasks Compatibility**:
+    - Support for `// i18n-tasks-use key.name` comments (interoperability).
+    - `InertiaI18n::I18nTasks::Scanner` adapter class to allow `i18n-tasks` to use `inertia_i18n`'s frontend scanning logic.
+- **Robust CLI**: `inertia-i18n` command now correctly loads the library in non-Rails environments.
+
+### Fixed
+
+- Scanner adapter now returns data in the format `i18n-tasks` expects (including source location).
+
 ## [0.5.0] - 2026-02-06
 
 ### Added

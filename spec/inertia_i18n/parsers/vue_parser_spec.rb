@@ -9,8 +9,9 @@ RSpec.describe InertiaI18n::Parsers::VueParser do
 
   it "extracts keys from .vue file" do
     result = parser.extract_keys(fixture_file)
+    keys = result[:static].map { |k| k[:key] }
 
-    expect(result[:static]).to include(
+    expect(keys).to include(
       "vue.profile_title",
       "vue.greeting",
       "vue.script_key"
