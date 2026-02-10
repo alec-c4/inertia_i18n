@@ -17,20 +17,24 @@ module InertiaI18n
       def extract_magic_comments(content)
         keys = []
 
-        # Regex to match both 'inertia-i18n-use' and 'i18n-tasks-use'
-        # Group 1: key
-        comment_pattern = /(?:inertia-i18n-use|i18n-tasks-use)\s+([a-zA-Z0-9_.]+)/
+        # Regex to match the comment lines
+        single_line_regex = %r{//\s*(?:inertia-i18n-use|i18n-tasks-use)\s+(.+)$}
+        block_regex = %r{/\*\s*(?:inertia-i18n-use|i18n-tasks-use)\s+(.+?)\s*\*/}
 
-        # Single line comments: // inertia-i18n-use key.name
-        content.scan(%r{//\s*#{comment_pattern}}) do |match|
+        content.scan(single_line_regex) do |match|
           line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
-          keys << {key: match[0], line: line}
+          keys_str = match[0]
+          keys_str.split(/\s+/).each do |key|
+            keys << {key: key, line: line} unless key.empty?
+          end
         end
 
-        # Block comments: /* inertia-i18n-use key.name */
-        content.scan(%r{/\*\s*#{comment_pattern}\s*\*/}) do |match|
+        content.scan(block_regex) do |match|
           line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
-          keys << {key: match[0], line: line}
+          keys_str = match[0]
+          keys_str.split(/\s+/).each do |key|
+            keys << {key: key, line: line} unless key.empty?
+          end
         end
 
         keys

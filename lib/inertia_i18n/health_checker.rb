@@ -78,7 +78,7 @@ module InertiaI18n
       dynamic_prefixes = @scan_results.dynamic_patterns.map { |p| p[:pattern] }
 
       # Add configured dynamic patterns
-      dynamic_prefixes.concat(@config.dynamic_patterns.keys)
+      dynamic_prefixes.concat(@config.dynamic_patterns&.keys || [])
 
       unused = available_keys - used_keys
 

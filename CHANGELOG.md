@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [0.6.1] - 2026-02-10
+
+### Fixed
+
+- Crash in `health` command when `dynamic_patterns` is missing from YAML config
+- Support for multiple keys in single-line magic comments (`// inertia-i18n-use key1 key2`)
+
 ## [0.6.0] - 2026-02-09
 
 ### Added

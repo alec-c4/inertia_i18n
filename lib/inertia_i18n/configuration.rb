@@ -103,7 +103,7 @@ module InertiaI18n
       self.locales = data["locales"].map(&:to_sym) if data.key?("locales")
 
       load_hash_attribute(:interpolation, data)
-      self.dynamic_patterns = data["dynamic_patterns"] if data.key?("dynamic_patterns")
+      self.dynamic_patterns = data["dynamic_patterns"] || {} if data.key?("dynamic_patterns")
       load_sibling_detection(data) if data.key?("sibling_detection")
       load_missing_key_filters(data) if data.key?("missing_key_filters")
     end
