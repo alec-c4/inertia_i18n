@@ -10,6 +10,7 @@ module InertiaI18n
 
       def check_dependencies
         @framework = detect_framework
+        @locales = detect_locales
       end
 
       def create_directory_structure
@@ -31,7 +32,10 @@ module InertiaI18n
       end
 
       def create_sample_locales
-        copy_file "common.en.yml", "config/locales/frontend/common.en.yml"
+        (@locales || [:en]).each do |locale|
+          @current_locale = locale.to_s
+          template "common.locale.yml.tt", "config/locales/frontend/common.#{locale}.yml"
+        end
       end
 
       def create_initializer
@@ -76,6 +80,13 @@ module InertiaI18n
       end
 
       private
+
+      def detect_locales
+        available = I18n.available_locales
+        (available.nil? || available.empty?) ? [:en] : available
+      rescue
+        [:en]
+      end
 
       def detect_framework
         return unless File.exist?("package.json")

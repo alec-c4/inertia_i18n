@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+## [0.6.2] - 2026-02-23
+
+### Fixed
+
+- Install generator now creates sample locale files (`common.{locale}.yml`) for **all configured locales**, not just English. Previously, only `common.en.yml` was created, causing `ru.json` (and other non-English locales) to be generated empty after `rake inertia_i18n:convert`.
+
+### Changed
+
+- Generated initializer now includes `config.ignore_unused = ["common"]` by default so that the sample `common.*` keys created by the generator don't trigger unused-key warnings in the RSpec health check.
+
 ## [0.6.1] - 2026-02-10
 
 ### Fixed

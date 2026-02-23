@@ -40,4 +40,52 @@ RSpec.describe InertiaI18n::Generators::InstallGenerator do
       expect(content).to include("jsx,tsx")
     end
   end
+
+  it "generates initializer with common in ignore_unused" do
+    Dir.chdir(destination) do
+      gen = described_class.new([], {}, {destination_root: destination})
+      allow(gen).to receive(:run)
+
+      gen.check_dependencies
+      gen.create_initializer
+
+      content = File.read("config/initializers/inertia_i18n.rb")
+      expect(content).to include('"common"')
+    end
+  end
+
+  context "when multiple locales are configured" do
+    before do
+      allow(I18n).to receive(:available_locales).and_return([:en, :ru])
+    end
+
+    it "creates sample locale files for each locale" do
+      Dir.chdir(destination) do
+        gen = described_class.new([], {}, {destination_root: destination})
+        allow(gen).to receive(:run)
+
+        gen.check_dependencies
+        gen.create_directory_structure
+        gen.create_sample_locales
+
+        expect(File.exist?("config/locales/frontend/common.en.yml")).to be true
+        expect(File.exist?("config/locales/frontend/common.ru.yml")).to be true
+      end
+    end
+
+    it "uses the correct locale as top-level YAML key" do
+      Dir.chdir(destination) do
+        gen = described_class.new([], {}, {destination_root: destination})
+        allow(gen).to receive(:run)
+
+        gen.check_dependencies
+        gen.create_directory_structure
+        gen.create_sample_locales
+
+        ru_content = YAML.safe_load_file("config/locales/frontend/common.ru.yml")
+        expect(ru_content).to have_key("ru")
+        expect(ru_content).not_to have_key("en")
+      end
+    end
+  end
 end
