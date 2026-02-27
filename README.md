@@ -242,6 +242,17 @@ config.dynamic_keys = {
 }
 ```
 
+**Option B: YAML config**
+
+```yaml
+# config/inertia_i18n.yml
+dynamic_keys:
+  "status.":
+    - active
+    - inactive
+    - pending
+```
+
 Now, when the scanner sees `t(\`status.\${statusKey}\`)`, it will automatically expand it to `status.active`, `status.inactive`, and `status.pending`, ensuring they are checked for existence and marked as used.
 
 Alternatively, you can just ignore the prefix if the possible values are not known using `dynamic_patterns`:
@@ -494,6 +505,11 @@ translation_functions:
   - i18n.t
 # dynamic_patterns:
 #   "status.": Dynamic status keys
+dynamic_keys:
+  "status.":
+    - active
+    - inactive
+    - pending
 ignore_unused: []
 ignore_missing: []
 key_properties:
