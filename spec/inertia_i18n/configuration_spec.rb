@@ -122,6 +122,18 @@ RSpec.describe InertiaI18n::Configuration do
       expect(config.dynamic_patterns).to eq({"status." => "Dynamic status keys", "priority." => "Dynamic priority keys"})
     end
 
+    it "loads dynamic_keys as hash" do
+      File.write(yaml_path, <<~YAML)
+        dynamic_keys:
+          "status.":
+            - active
+            - inactive
+      YAML
+
+      config.load_from_yaml(yaml_path)
+      expect(config.dynamic_keys).to eq({"status." => %w[active inactive]})
+    end
+
     it "loads ignore_unused and ignore_missing" do
       File.write(yaml_path, <<~YAML)
         ignore_unused:
