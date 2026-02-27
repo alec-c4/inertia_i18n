@@ -55,5 +55,27 @@ RSpec.describe InertiaI18n::Scanner do
       # 6 original + Home.jsx + Home.vue
       expect(results.files.keys.count).to eq(8)
     end
+
+    context "when dynamic_keys is configured" do
+      before do
+        InertiaI18n.configure do |config|
+          config.dynamic_keys = {
+            "status." => %w[active inactive]
+          }
+        end
+      end
+
+      it "expands dynamic patterns into static keys" do
+        expect(results.static_keys).to include("status.active", "status.inactive")
+      end
+
+      it "adds occurrences with file and line number for expanded keys" do
+        occurrences = results.occurrences["status.active"]
+        expect(occurrences).to be_an(Array)
+        expect(occurrences).not_to be_empty
+        expect(occurrences.first[:file]).to be_a(String)
+        expect(occurrences.first[:line]).to be_a(Integer)
+      end
+    end
   end
 end

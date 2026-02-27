@@ -205,6 +205,12 @@ module InertiaI18n
             # "status." => "Dynamic status keys"
           }
 
+          # Dynamic keys (prefix => array of possible values)
+          # These keys will be automatically expanded and checked for existence
+          config.dynamic_keys = {
+            # "status." => ["active", "inactive", "pending"]
+          }
+
           # Keys to ignore during unused check
           config.ignore_unused = []
 
@@ -252,6 +258,14 @@ module InertiaI18n
         # Keys matching these prefixes won't be marked as unused
         # dynamic_patterns:
         #   "status.": Dynamic status keys
+
+        # Dynamic keys (prefix => array of possible values)
+        # These keys will be automatically expanded and checked for existence
+        # dynamic_keys:
+        #   "status.":
+        #     - active
+        #     - inactive
+        #     - pending
 
         # Keys to ignore during unused check
         ignore_unused: []

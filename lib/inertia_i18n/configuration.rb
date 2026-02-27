@@ -35,6 +35,9 @@ module InertiaI18n
     # Dynamic key patterns (prefix => regex)
     attr_accessor :dynamic_patterns
 
+    # Dynamic keys exact mapping (prefix => array of possible values)
+    attr_accessor :dynamic_keys
+
     # Keys to ignore during unused check
     attr_accessor :ignore_unused
 
@@ -65,6 +68,7 @@ module InertiaI18n
       }
       @translation_functions = %w[t $t i18n.t]
       @dynamic_patterns = {}
+      @dynamic_keys = {}
       @ignore_unused = []
       @ignore_missing = []
       @key_properties = %w[titleKey labelKey messageKey descriptionKey placeholderKey key]
@@ -104,6 +108,7 @@ module InertiaI18n
 
       load_hash_attribute(:interpolation, data)
       self.dynamic_patterns = data["dynamic_patterns"] || {} if data.key?("dynamic_patterns")
+      self.dynamic_keys = data["dynamic_keys"] || {} if data.key?("dynamic_keys")
       load_sibling_detection(data) if data.key?("sibling_detection")
       load_missing_key_filters(data) if data.key?("missing_key_filters")
     end

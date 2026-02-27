@@ -26,7 +26,22 @@ module InertiaI18n
         end
       end
 
-      @dynamic_patterns.concat(keys[:dynamic])
+      config = InertiaI18n.configuration
+      dynamic_keys_config = config.dynamic_keys || {}
+
+      keys[:dynamic].each do |dynamic|
+        pattern = dynamic[:pattern]
+        @dynamic_patterns << dynamic
+
+        if dynamic_keys_config.key?(pattern)
+          dynamic_keys_config[pattern].each do |value|
+            # Append value to pattern (e.g. "status." + "active" -> "status.active")
+            expanded_key = "#{pattern}#{value}"
+            @static_keys.add(expanded_key)
+            @occurrences[expanded_key] << {file: file, line: dynamic[:line]}
+          end
+        end
+      end
     end
 
     def used_keys

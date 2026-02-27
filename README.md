@@ -231,6 +231,27 @@ Handles:
 - Template literals: `t(\`user.\${type}.title\`)` (flagged for review)
 - Dynamic patterns: `t(keyVariable)` (flagged for review)
 
+### Dynamic Keys Configuration
+
+When you use template literals or dynamic variables for translations, the scanner might flag them as unused or missing. You can configure exact mappings for these dynamic keys using the `dynamic_keys` setting.
+
+```ruby
+# config/initializers/inertia_i18n.rb
+config.dynamic_keys = {
+  "status." => ["active", "inactive", "pending"]
+}
+```
+
+Now, when the scanner sees `t(\`status.\${statusKey}\`)`, it will automatically expand it to `status.active`, `status.inactive`, and `status.pending`, ensuring they are checked for existence and marked as used.
+
+Alternatively, you can just ignore the prefix if the possible values are not known using `dynamic_patterns`:
+
+```ruby
+config.dynamic_patterns = {
+  "status." => "Dynamic status keys"
+}
+```
+
 ### Magic Comments
 
 Use magic comments to mark dynamic keys as used or suppress warnings. Both `inertia-i18n-use` and `i18n-tasks-use` are supported.
@@ -414,6 +435,12 @@ InertiaI18n.configure do |config|
   # Keys matching these prefixes won't be marked as unused
   config.dynamic_patterns = {
     # "status." => "Dynamic status keys"
+  }
+
+  # Dynamic keys exact mapping (prefix => array of possible values)
+  # These keys will be automatically expanded and checked for existence
+  config.dynamic_keys = {
+    # "status." => ["active", "inactive", "pending"]
   }
 
   # Keys to ignore during unused/missing checks

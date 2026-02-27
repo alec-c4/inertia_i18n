@@ -79,6 +79,7 @@ module InertiaI18n
 
       # Add configured dynamic patterns
       dynamic_prefixes.concat(@config.dynamic_patterns&.keys || [])
+      dynamic_prefixes.concat(@config.dynamic_keys&.keys || [])
 
       unused = available_keys - used_keys
 

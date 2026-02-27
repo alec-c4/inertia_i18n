@@ -83,13 +83,15 @@ module InertiaI18n
           content.scan(/(?<!\w)#{escaped_func}\(\s*`([^`]*\$\{.+?)`/) do |match|
             template = match[0]
             prefix = template.split("${").first
-            patterns << {pattern: prefix, type: :template_literal, raw: template}
+            line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+            patterns << {pattern: prefix, type: :template_literal, raw: template, line: line}
           end
 
           # Matches t('prefix.' + var) or t("prefix." + var) - string concatenation
           content.scan(/(?<!\w)#{escaped_func}\(\s*(['"])([^'"]+\.)\1\s*\+/) do |match|
             prefix = match[1]
-            patterns << {pattern: prefix, type: :string_concat, raw: "#{prefix} + ..."}
+            line = content[0..Regexp.last_match.begin(0)].count("\n") + 1
+            patterns << {pattern: prefix, type: :string_concat, raw: "#{prefix} + ...", line: line}
           end
         end
 
