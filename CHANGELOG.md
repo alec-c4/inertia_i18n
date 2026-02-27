@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.7.0] - 2026-02-27
+
+### Added
+
+- **Dynamic Keys Configuration**: Added `dynamic_keys` configuration property to expand dynamic patterns into explicit static keys. This allows the scanner to check for missing variants of dynamic keys (e.g. `status.active`, `status.inactive`) and mark them as used. Supported in both Ruby initializer and YAML configuration formats.
+
 ## [0.6.2] - 2026-02-23
 
 ### Fixed
