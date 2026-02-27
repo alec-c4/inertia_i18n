@@ -217,6 +217,8 @@ en:
 }
 ```
 
+*Note: The converter supports all standard plural forms (`zero`, `one`, `two`, `few`, `many`, `other`) and maps them to the syntax expected by i18next.*
+
 ### Smart Scanning
 
 Detects translation usage in:

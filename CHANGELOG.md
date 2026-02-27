@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [0.8.0] - 2026-02-27
+
+### Added
+
+- **Full Pluralization Support:** `Converter` now fully supports parsing `zero`, `one`, `two`, `few`, `many`, and `other` plural forms from YAML into i18next JSON syntax.
+- **Smart Plural Syncing:** `health` check `unsync` and `unused` commands now group plural keys (e.g. `apples_one`, `apples_few`) under a single `apples (plural forms)` message. This prevents false positives when locales have differing sets of pluralization rules (e.g. Russian vs. English) and drastically reduces warning noise.
+
 ## [0.7.0] - 2026-02-27
 
 ### Added

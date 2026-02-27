@@ -103,11 +103,14 @@ module InertiaI18n
       # Filter out keys covered by ignore_unused config
       unused = filter_ignored_keys(unused, @config.ignore_unused)
 
-      unused.each do |key|
+      normalized_unused = normalize_keys_for_sync(unused)
+
+      normalized_unused.each do |key|
+        display_key = key.sub("_[plural]", " (plural forms)")
         @issues[:unused] << {
-          key: key,
+          key: display_key,
           severity: :warning,
-          message: "Key '#{key}' exists in #{primary_locale}.json but is not used in code"
+          message: "Key '#{display_key}' exists in #{primary_locale}.json but is not used in code"
         }
       end
     end
@@ -115,32 +118,51 @@ module InertiaI18n
     def check_locale_sync
       primary_locale = @config.primary_locale
       primary_keys = Set.new(LocaleLoader.extract_keys(@locales[primary_locale] || {}))
+      normalized_primary = normalize_keys_for_sync(primary_keys)
 
       @config.secondary_locales.each do |locale|
         locale_data = @locales[locale] || {}
         locale_keys = Set.new(LocaleLoader.extract_keys(locale_data))
+        normalized_locale = normalize_keys_for_sync(locale_keys)
 
-        missing_in_locale = primary_keys - locale_keys
-        extra_in_locale = locale_keys - primary_keys
+        missing_in_locale = normalized_primary - normalized_locale
+        extra_in_locale = normalized_locale - normalized_primary
 
-        missing_in_locale.each do |key|
+        missing_in_locale.each do |n_key|
+          display_key = n_key.sub("_[plural]", " (plural forms)")
           @issues[:unsync] << {
-            key: key,
+            key: display_key,
             locale: locale,
             severity: :error,
-            message: "Key '#{key}' exists in #{primary_locale}.json but missing from #{locale}.json"
+            message: "Key '#{display_key}' exists in #{primary_locale}.json but missing from #{locale}.json"
           }
         end
 
-        extra_in_locale.each do |key|
+        extra_in_locale.each do |n_key|
+          display_key = n_key.sub("_[plural]", " (plural forms)")
           @issues[:unsync] << {
-            key: key,
+            key: display_key,
             locale: locale,
             severity: :warning,
-            message: "Key '#{key}' exists in #{locale}.json but missing from #{primary_locale}.json"
+            message: "Key '#{display_key}' exists in #{locale}.json but missing from #{primary_locale}.json"
           }
         end
       end
+    end
+
+    def normalize_keys_for_sync(keys)
+      plural_suffixes = %w[_zero _one _two _few _many _other]
+
+      normalized = Set.new
+      keys.each do |key|
+        suffix = plural_suffixes.find { |s| key.end_with?(s) }
+        if suffix
+          normalized.add(key.chomp(suffix) + "_[plural]")
+        else
+          normalized.add(key)
+        end
+      end
+      normalized
     end
 
     def filter_ignored_keys(keys, ignore_patterns)
