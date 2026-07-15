@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [0.8.1] - 2026-07-15
+
+### Changed
+
+- CI now tests against Ruby 3.3+ (Ruby 3.2 removed from the test matrix). The gem itself still supports Ruby >= 3.2.
+- Dependency updates (concurrent-ruby 1.3.7, nokogiri 1.19.4, erb 6.0.4, rack 3.2.6, rack-session 2.1.2, activesupport 8.1.2.1, json 2.19.2, loofah 2.25.1)
+
 ## [0.8.0] - 2026-02-27
 
 ### Added
